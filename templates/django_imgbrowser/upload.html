@@ -1,0 +1,14 @@
+{% extends "django_imgbrowser/base.html" %}
+
+{% block "columna_derecha" %}
+<p>
+  <a href="{% url imgbrowser_list %}{% if directorio %}{{ directorio.fullpath }}{% endif %}"><i class="icon-arrow-left"></i>Volver</a>
+</p>
+
+<form method="post" action="" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ forms.imagenes.as_p }}
+
+  <button>Guardar</button>
+</form>
+{% endblock %}

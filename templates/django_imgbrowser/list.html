@@ -1,0 +1,93 @@
+{% extends "django_imgbrowser/base.html" %}
+
+{% block "columna_derecha" %}
+<ul class="object-tools">
+  <li>
+    <a 
+       {% if perms.django_imgbrowser.add_imagenes %}
+       href="{% url imgbrowser_upload_add %}{% if directorio %}?did={{ directorio.id }}{% endif %}"
+       {% else %}
+       href="javascript:alert('No tiene permisos')"
+       {% endif %}>Agregar Imagen</a>
+  </li>
+</ul>
+
+<div class="module" id="changelist"> <!-- changelist -->
+
+<div id="toolbar"> <!-- toolbar -->
+  <form id="changelist-search" action="" method="get">
+    <div><!-- DIV needed for valid HTML -->
+      <label for="searchbar"><img src="{{ STATIC_URL }}admin/img/icon_searchbox.png" alt="Search"></label>
+      {{ forms.buscar }}
+      <button>Buscar</button>
+    </div>
+  </form>
+</div> <!-- /toolbar -->
+
+<div class="results"><!-- result -->
+<table class="table-result" id="result_list">
+  <thead>
+    <tr>
+      <th scope="col" class="sortable">Imagen</th>
+      <th scope="col" class="sortable">Alt</th>
+      <th scope="col" class="sortable">Ver Imagen</th>
+      <th scope="col" class="sortable">Seleccionar</th>
+      <th scope="col" class="sortable">Editar</th>
+      <th scope="col" class="sortable">Eliminar</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for imagen in imagenes %}
+    <tr class="{% cycle 'row1' 'row2' %}">
+      <td class="col-thumb">
+        {% if perms.django_imgbrowser.change_imagenes %}
+        <a href="{% url imgbrowser_upload_change obj_id=imagen.id %}">
+          <img src="{{ imagen.thumbnail }}" class="thumb" alt="{{ imagen.alt }}"/>
+        </a>
+        {% else %}
+          <img src="{{ imagen.thumbnail }}" class="thumb" alt="{{ imagen.alt }}"/>
+        {% endif %}
+      </td>
+      <td class="col-alt"> {{ imagen.alt }}</td>
+      <td class="col-btn">
+        <a href="{{ imagen.url }}" target="_blank">
+          <button><i class="icon-picture"></i> Ver Imagen</button>
+        </a>
+      </td>
+      <td class="col-btn col-btn-select-image">
+        <button data-image-thumb="{{ imagen.thumbnail }}" data-image-path="{{ imagen.url }}" data-image-id="{{ imagen.id }}" class="btn-image-path"><i class="icon-check"></i>Seleccionar</button>
+      </td>
+      <td class="col-btn">
+        <a {% if perms.django_imgbrowser.change_imagenes %}
+           href="{% url imgbrowser_upload_change obj_id=imagen.id %}"
+           {% else %}
+           href="javascript:alert('No tiene permisos')"
+           {% endif %}
+           >
+          <button><i class="icon-edit"></i>Editar</button>
+        </a>
+      </td>
+      <td class="col-btn">
+        <a {% if perms.django_imgbrowser.delete_imagenes %}
+           href="{% url imgbrowser_delete_upload obj_id=imagen.id %}"
+           {% else %}
+           href="javascript:alert('No tiene permisos')"
+           {% endif %}
+           >
+          <button><i class="icon-remove"></i>Eliminar</button>
+        </a>
+      </td>
+      
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan=6> No hay imagenes que mostrar.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+</div> <!-- /result -->
+
+</div> <!-- /changelist -->
+{% endblock %}

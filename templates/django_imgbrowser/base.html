@@ -1,0 +1,82 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<div class="izquierda">
+  <ul class="object-tools">
+    <li>
+      <a {% if perms.django_imgbrowser.add_directorios %}
+         href="{% url imgbrowser_mkdir_add %}{% if directorio %}?did={{ directorio.id }}{% endif %}"
+         {% else %}
+         href="javascript:alert('No tiene permisos')"
+         {% endif %}
+         >Agregar Directorio</a>
+    </li>
+  </ul>
+
+  <ul class="dir-list">
+    {% if directorio %}
+      <li>
+        <i class="icon-folder-open"></i>
+        <a href="{% url imgbrowser_list %}{% if directorio.padre %}{{ directorio.padre.fullpath }}{% endif %}">{{ directorio }}</a>
+        <a {% if perms.django_imgbrowser.change_directorios %}
+           href="{% url imgbrowser_mkdir_change obj_id=directorio.id %}"
+           {% else %}
+           href="javascript:alert('No tiene permisos')"
+           {% endif %}><i class="icon-edit"></i></a>
+        <a {% if perms.django_imgbrowser.delete_directorios %}
+           href="{% url imgbrowser_delete_mkdir obj_id=directorio.id %}"
+           {% else %}
+           href="javascript:alert('No tiene permisos')"
+           {% endif %}><i class="icon-remove"></i></a>
+      </li>
+    {% endif %}
+    {% for subdirectorio in directorios %}
+      <li>
+        {% if directorio %}&nbsp;&nbsp;&nbsp;{% endif %}
+        <i class="icon-folder-close"></i>
+        <a href="{% url imgbrowser_list %}{{ subdirectorio.fullpath }}">
+          {{ subdirectorio.nombre }}
+        </a>
+        <a {% if perms.django_imgbrowser.change_directorios %}
+           href="{% url imgbrowser_mkdir_change obj_id=subdirectorio.id %}"
+           {% else %}
+           href="javascript:alert('No tiene permisos')"
+           {% endif %}><i class="icon-edit"></i></a>
+        <a {% if perms.django_imgbrowser.delete_directorios %}
+           href="{% url imgbrowser_delete_mkdir obj_id=subdirectorio.id %}"
+           {% else %}
+           href="javascript:alert('No tiene permisos')"
+           {% endif %}><i class="icon-remove"></i></a>
+      
+      </li>
+    {% empty %}
+      <li>No hay directorios que mostrar.</li>
+    {% endfor %}
+  </ul>
+</div>
+
+<div class="derecha">
+{% block "columna_derecha" %}
+  <!-- imagenes aqui! -->
+{% endblock %}
+</div>
+
+<style>
+.full,
+.izquierda,
+.derecha{display:block;}
+.izquierda{float:left;width:25%;}
+.derecha{float:right;width:70%;}
+.full{width:100%;clear:both;height:20px;backround:#f00;}
+.table-result{ width:100%; }
+.col-thumb{width:100px;}
+.col-alt{width:50%;}
+.dir-list li{ list-style-type:none; }
+.thumb{ max-height:100px; max-width:100px; }
+</style>
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}admin/css/changelists.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/bootstrap-icons.css" />
+<script type="text/javascript" src="{{ STATIC_URL }}admin/js/jquery.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}admin/js/jquery.init.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/imgbrowser.js"></script>
+{% endblock %}

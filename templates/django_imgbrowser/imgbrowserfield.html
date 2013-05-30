@@ -1,0 +1,12 @@
+<input id="{{ final_attrs.id }}" type="{{ final_attrs.type }}" class="imgbrowser" name="{{ final_attrs.name }}" value="{{ value }}" />
+<button type="button" data-related-field="{{ final_attrs.id }}" data-popup-url="{{ popup_url }}" class="btn btn-select-image">
+  Seleccionar Imagen
+</button>
+
+<p class="help fufield-thumbnail" id="thumb_{{ final_attrs.id }}"
+{% if not value %}style="display:none"{% endif %}>
+    <a href="#" target="_blank" id="link_{{ final_attrs.id }}">
+        <img height="100" width="100" id="img_{{ final_attrs.id }}"
+             src="{{ value }}" class="preview" />
+    </a>
+</p>
