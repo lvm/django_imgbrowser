@@ -3,10 +3,12 @@ from django.conf import settings
 from django.db import models
 from django.db.models import CharField
 from django.db.models import Field
+from django.forms.fields import MultiValueField
 from django import forms
 from django.forms.widgets import Input, HiddenInput
 from django.template.loader import render_to_string
 from django.core.urlresolvers import reverse
+import pickle
 
 class IMGBrowserWidget(Input):
     input_type = 'hidden'
@@ -49,6 +51,11 @@ class IMGBrowserField(Field):
     def get_internal_type(self):
         return "CharField"
 
+    def clean(self, value):
+        if not value:
+            value = ""
+        return value
+
     def formfield(self, **kwargs):
         attrs = {}
         defaults = {
@@ -58,3 +65,27 @@ class IMGBrowserField(Field):
         defaults.update(kwargs)
         return super(IMGBrowserField, self).formfield(**defaults)
 
+
+class IMGBrowserWithIDWidget(forms.widgets.MultiWidget):
+    def __init__(self, attrs=None):
+        widgets = [IMGBrowserWidget(),
+                   forms.HiddenInput()]
+        super(IMGBrowserWithIDWidget, self).__init__(widgets, attrs)
+ 
+    def decompress(self, value):
+        if value:
+            return pickle.loads(value)
+        else:
+            return ['', '']
+
+class IMGBrowserWithIDField(forms.fields.MultiValueField):
+    widget = IMGBrowserWithIDWidget
+ 
+    def __init__(self, *args, **kwargs):
+        list_fields = [IMGBrowserField(),
+                       forms.fields.CharField(max_length=10)]
+                       #models.ForeignKey(Imagenes)]
+        super(IMGBrowserWithIDField, self).__init__(list_fields, *args, **kwargs)
+
+    def compress(self, values):
+        return pickle.dumps(values)
